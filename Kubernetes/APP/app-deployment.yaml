@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      initContainers:
+      - name: init-permissions
+        image: busybox
+        command: ["sh", "-c", "chmod -R 777 /app/logs"]
+        volumeMounts:
+        - name: log-volume
+          mountPath: /app/logs
+      containers:
+      - name: backend
+        image: geri3313/cloud-app:8
+        imagePullPolicy: Always
+        securityContext:
+          runAsUser: 10001
+          runAsGroup: 10001
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "500m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+        readinessProbe: # Corrected readiness probe section
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 60
+          failureThreshold: 3
+          periodSeconds: 60
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 60
+          failureThreshold: 3
+          periodSeconds: 60
+        volumeMounts:
+        - name: log-volume
+          mountPath: /app/logs
+      volumes:
+      - name: log-volume
+        emptyDir: {}
+
+
+# kubectl apply -f app-deployment.yaml 

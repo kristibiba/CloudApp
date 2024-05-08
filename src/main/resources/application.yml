@@ -1,0 +1,53 @@
+# Spring Boot configuration
+spring:
+  profiles:
+    active: default
+  # Server configuration
+  server:
+    port: 8080
+
+  # Database
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://flora.db.elephantsql.com/qahhmijs
+    username: qahhmijs
+    password: br5luxb8r-Lbq8ZgKzi45g_ziNSOecSY
+
+  # JPA properties
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  # Security configuration
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: ${GITHUB_CLIENT_ID}
+            clientSecret: ${GITHUB_CLIENT_SECRET}
+
+# Log4j configuration
+logging:
+  level:
+    root: INFO
+  file:
+    name: logs/application.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  loggers:
+    file:
+      name: FILE
+  appenders:
+    file:
+      type: File
+      name: FILE
+      fileName: "logs/application.log"
+      pattern: "${logging.pattern.file}"
+    console:
+      type: Console
+      name: STDOUT
+      layout:
+        pattern: "${logging.pattern.console}"
